@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="sidebar" class="sidebar-content h-100 d-flex flex-column">
+    <!-- Sidebar Header -->
+    <div class="sidebar-header p-3 border-bottom border-secondary">
+        <h5 class="mb-0 fw-bold text-white">
+            <i class="bi bi-flower1 me-2"></i>
+            FlowerShop
+        </h5>
+    </div>
+    
+    <!-- Sidebar Navigation -->
+    <div class="flex-grow-1 overflow-auto">
+        <ul class="nav flex-column p-2">
+            <!-- Dashboard -->
+            <!-- <li class="nav-item">
+                <a class="nav-link sidebar-link d-flex align-items-center" 
+                   th:href="@{/dashboard/order}"
+                   th:classappend="${currentPage == 'order' ? 'active' : ''}">
+                    <i class="bi bi-speedometer2 me-2"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li> -->
+            
+            <!-- Products -->
+            <li class="nav-item">
+                <a class="nav-link sidebar-link d-flex align-items-center" 
+                   th:href="@{/dashboard/product}"
+                   th:classappend="${currentPage == 'product' ? 'active' : ''}">
+                    <i class="bi bi-box-seam me-2"></i>
+                    <span>Products</span>
+                </a>
+            </li>
+            
+            <!-- Categories -->
+            <li class="nav-item">
+                <a class="nav-link sidebar-link d-flex align-items-center" 
+                   th:href="@{/dashboard/category}"
+                   th:classappend="${currentPage == 'category' ? 'active' : ''}">
+                    <i class="bi bi-tags me-2"></i>
+                    <span>Categories</span>
+                </a>
+            </li>
+            
+            <!-- Orders -->
+            <li class="nav-item">
+                <a class="nav-link sidebar-link d-flex align-items-center" 
+                   th:href="@{/dashboard/order}"
+                   th:classappend="${currentPage == 'order' ? 'active' : ''}">
+                    <i class="bi bi-cart-check me-2"></i>
+                    <span>Orders</span>
+                </a>
+            </li>
+            
+            <!-- Accounts -->
+            <li class="nav-item">
+                <a class="nav-link sidebar-link d-flex align-items-center" 
+                   th:href="@{/dashboard/account}"
+                   th:classappend="${currentPage == 'account' ? 'active' : ''}">
+                    <i class="bi bi-people me-2"></i>
+                    <span>Accounts</span>
+                </a>
+            </li>
+            
+            <!-- Discounts -->
+<!--             <li class="nav-item">
+                <a class="nav-link sidebar-link d-flex align-items-center" 
+                   th:href="@{/dashboard/discount}"
+                   th:classappend="${currentPage == 'discount' ? 'active' : ''}">
+                    <i class="bi bi-percent me-2"></i>
+                    <span>Discounts</span>
+                </a>
+            </li> -->
+        </ul>
+    </div>
+</div>
+
+</body>
+</html>

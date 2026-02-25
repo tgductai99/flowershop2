@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/admin}">
+<head>
+<title layout:fragment="title">Product Management</title>
+</head>
+<body>
+	<!-- Page Title -->
+	<span layout:fragment="pageTitle">Product Management</span>
+	
+	<div layout:fragment="content">
+		<div class="row">
+			<!-- Product List Table -->
+			<div class="col-12">
+				<div class="card admin-table-card">
+					<div class="card-header">
+						<h5 class="mb-0">
+							<i class="bi bi-box-seam me-2"></i>Products
+						</h5>
+						<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productFormModal">
+							<i class="bi bi-plus-circle me-2"></i>Add Product
+						</button>
+					</div>
+
+					<div class="card-body p-3">
+						<!-- Success/Error Messages -->
+						<div th:if="${message == 'saveTrue'}"
+						     class="alert alert-success alert-dismissible fade show auto-hide" role="alert">
+						    <i class="bi bi-check-circle me-2"></i>Product saved successfully!
+						    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+						</div>
+						
+						<div th:if="${message == 'deleteTrue'}"
+						     class="alert alert-success alert-dismissible fade show auto-hide" role="alert">
+						    <i class="bi bi-check-circle me-2"></i>Product deleted successfully!
+						    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+						</div>
+						
+						<div th:if="${message == 'saveFail'}"
+						     class="alert alert-danger alert-dismissible fade show auto-hide" role="alert">
+						    <i class="bi bi-exclamation-triangle me-2"></i>Failed to save product!
+						    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+						</div>
+						
+						<div th:if="${message == 'deleteFail'}"
+						     class="alert alert-danger alert-dismissible fade show auto-hide" role="alert">
+						    <i class="bi bi-exclamation-triangle me-2"></i>Failed to delete product!
+						    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+						</div>
+
+						<!-- Search & Filter -->
+						<form th:action="@{/dashboard/product}" method="get" class="row g-3 mb-4">
+							<div class="col-md-5">
+								<input type="text" class="form-control"
+									placeholder="Search by product name..." name="keyword" th:value="${keyword}">
+							</div>
+
+							<div class="col-md-4">
+								<select class="form-select" name="categoryId">
+									<option value="">All Categories</option>
+									<option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}"
+											 th:selected="${c.id == categoryId}"></option>
+								</select>
+							</div>
+
+							<div class="col-md-3">
+								<button type="submit" class="btn btn-primary">
+									<i class="bi bi-search me-2"></i>Filter
+								</button>
+								<a th:href="@{/dashboard/product}" class="btn btn-secondary ms-2">
+									<i class="bi bi-arrow-clockwise me-2"></i>Reset
+								</a>
+							</div>
+						</form>
+
+						<!-- Product Table -->
+						<div class="table-responsive">
+							<table class="table table-hover align-middle admin-table">
+								<thead>
+									<tr>
+										<th>ID</th>
+										<th>Image</th>
+										<th>Name</th>
+										<th>Category</th>
+										<th>Price</th>
+										<th>Stock</th>
+										<th>Available</th>
+										<th>Actions</th>
+									</tr>
+								</thead>
+
+								<tbody>
+									<tr th:each="p : ${products}">
+										<td th:text="${p.id}">1</td>
+										<td>
+										    <img th:src="@{/images/{img}(img=${p.image})}"
+										         class="table-image"
+										         th:alt="${p.name}"
+										         onerror="this.style.display='none'">
+										</td>
+										<td th:text="${p.name}">Product Name</td>
+										<td th:text="${p.category.name}">Category</td>
+										<td th:text="${T(poly.edu.utils.CurrencyUtil).formatVND(p.price)}">Price</td>
+										<td th:text="${p.amount}">Stock</td>
+										<td>
+											<span class="status-badge" 
+											      th:classappend="${p.available ? 'active' : 'inactive'}"
+											      th:text="${p.available ? 'Yes' : 'No'}">
+											</span>
+										</td>
+										<td>
+											<div class="table-actions">
+												<a th:href="@{/dashboard/product/edit/{id}(id=${p.id})}"
+													class="btn btn-sm btn-warning" title="Edit">
+													<i class="bi bi-pencil"></i>
+												</a>
+												<a th:href="@{/dashboard/product/confirm-delete/{id}(id=${p.id})}"
+													class="btn btn-sm btn-danger" title="Delete">
+													<i class="bi bi-trash"></i>
+												</a>
+											</div>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					
+					<!-- Pagination -->
+					<nav class="admin-pagination" th:if="${page != null}">
+					    <ul class="pagination mb-0">
+					
+							<!-- First -->
+					        <li class="page-item" th:classappend="${page == 0} ? 'disabled'">
+					            <a class="page-link"
+					               th:href="@{/dashboard/product(
+					                    page=0,
+					                    keyword=${keyword},
+					                    categoryId=${categoryId}
+					               )}">
+					                First
+					            </a>
+					        </li>
+					
+					        <!-- Previous -->
+					        <li class="page-item" th:classappend="${page == 0} ? 'disabled'">
+					            <a class="page-link"
+					               th:href="@{/dashboard/product(
+					                    page=${page > 0 ? page - 1 : 0},
+					                    keyword=${keyword},
+					                    categoryId=${categoryId}
+					               )}">
+					                &laquo;
+					            </a>
+					        </li>
+					
+					        <!-- Page Numbers (ONLY 5) -->
+							<li class="page-item"
+							    th:each="i : ${#numbers.sequence(
+							        page > 1 ? page - 2 : 0,
+							        page < pages - 2 ? page + 2 : pages - 1
+							    )}"
+							    th:classappend="${i == page} ? 'active'">
+							    <a class="page-link"
+							       th:text="${i + 1}"
+							       th:href="@{/dashboard/product(
+							            page=${i},
+							            keyword=${keyword},
+							            categoryId=${categoryId}
+							       )}">
+							    </a>
+							</li>
+					
+					        <!-- Next -->
+					        <li class="page-item" th:classappend="${page == pages - 1} ? 'disabled'">
+					            <a class="page-link"
+					               th:href="@{/dashboard/product(
+					                    page=${page < pages - 1 ? page + 1 : pages - 1},
+					                    keyword=${keyword},
+					                    categoryId=${categoryId}
+					               )}">
+					                 &raquo;
+					            </a>
+					        </li>
+							
+							<!-- Last -->
+					        <li class="page-item" th:classappend="${page == pages - 1} ? 'disabled'">
+					            <a class="page-link"
+					               th:href="@{/dashboard/product(
+					                    page=${pages - 1},
+					                    keyword=${keyword},
+					                    categoryId=${categoryId}
+					               )}">
+					                Last
+					            </a>
+					        </li>
+					    </ul>
+					</nav>
+				</div>
+			</div>
+		</div>
+		
+		<!-- Delete Confirmation Modal (Server-side controlled) -->
+		<div class="modal fade" id="deleteModal" tabindex="-1"
+		     th:classappend="${showDeleteModal} ? 'show' : ''" 
+		     th:style="${showDeleteModal} ? 'display: block;' : ''"
+		     th:if="${deleteProduct != null}">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header bg-danger text-white">
+						<h5 class="modal-title">
+							<i class="bi bi-exclamation-triangle me-2"></i>Confirm Delete
+						</h5>
+						<a th:href="@{/dashboard/product}" class="btn-close btn-close-white" aria-label="Close"></a>
+					</div>
+					<div class="modal-body text-center py-4">
+						<i class="bi bi-trash text-danger" style="font-size: 3rem;"></i>
+						<h5 class="mt-3">Are you sure?</h5>
+						<p class="text-muted">
+							Do you want to delete "<span th:text="${deleteProduct.name}"></span>"?<br>
+							This action cannot be undone.
+						</p>
+					</div>
+					<div class="modal-footer">
+						<a th:href="@{/dashboard/product}" class="btn btn-secondary">Cancel</a>
+						<a th:href="@{/dashboard/product/delete/{id}(id=${deleteProduct.id})}"
+							class="btn btn-danger">
+							<i class="bi bi-trash me-2"></i>Delete
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!-- Product Form Modal -->
+		<div class="modal fade" id="productFormModal" tabindex="-1" aria-labelledby="productFormModalLabel" aria-hidden="true"
+		     th:classappend="${showModal} ? 'show' : ''" th:style="${showModal} ? 'display: block;' : ''">
+			<div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="modal-header bg-primary text-white">
+						<h5 class="modal-title" id="productFormModalLabel">
+							<i class="bi bi-box-seam me-2"></i>
+							<span th:text="${product.id != null ? 'Edit Product' : 'Add New Product'}">Add New Product</span>
+						</h5>
+						<a th:href="@{/dashboard/product/cancel}" class="btn-close btn-close-white" aria-label="Close"></a>
+					</div>
+					<div class="modal-body">
+						<form th:action="@{/dashboard/product/save}" th:object="${product}"
+							method="post" enctype="multipart/form-data" id="productForm">
+							
+							<input type="hidden" th:field="*{id}"/>
+							<input type="hidden" th:field="*{image}">
+							
+							<div class="row g-3">
+								<!-- Current Image Preview -->
+								<div class="col-12" th:if="${product.image != null}">
+								    <label class="form-label fw-semibold">Current Image</label>
+								    <div class="border rounded p-2 text-center bg-light">
+								        <img th:src="@{/images/{img}(img=*{image})}"
+								             class="img-fluid rounded"
+								             id="currentImagePreview"
+								             alt="Current product image"
+								             style="max-height:200px;"
+								             onerror="this.src='/images/products/placeholder.jpg'">
+								    </div>
+								</div>
+								
+								<!-- Product Name -->
+								<div class="col-md-6">
+									<label for="productName" class="form-label required">Product Name</label>
+									<input type="text" class="form-control" id="productName" 
+									       th:field="*{name}" required>
+									<div class="invalid-feedback">Please provide a product name.</div>
+								</div>
+
+								<!-- Category -->
+								<div class="col-md-6">
+									<label for="productCategory" class="form-label required">Category</label>
+									<select class="form-select" id="productCategory" th:field="*{category.id}" required>
+										<option value="">Select Category</option>
+										<option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}"></option>
+									</select>
+									<div class="invalid-feedback">Please select a category.</div>
+								</div>
+
+								<!-- Price -->
+								<div class="col-md-6">
+									<label for="productPrice" class="form-label required">Price (VND)</label>
+									<input type="number" step="1000" class="form-control" id="productPrice" 
+									       th:field="*{price}" required min="0">
+									<div class="invalid-feedback">Please provide a valid price.</div>
+								</div>
+								
+								<!-- Stock Amount -->
+								<div class="col-md-6">
+									<label for="productAmount" class="form-label required">Stock Quantity</label>
+									<input type="number" step="1" class="form-control" id="productAmount" 
+									       th:field="*{amount}" required min="0">
+									<div class="invalid-feedback">Please provide stock quantity.</div>
+								</div>
+
+								<!-- Upload Image -->
+								<div class="col-12">
+								    <label for="productImage" class="form-label">Upload New Image</label>
+								    <input type="file" class="form-control" id="productImage"
+								           name="imageFile" accept="image/*" onchange="previewImage(this)">
+								    <div class="form-text">
+								        Allowed: JPG, PNG, GIF (Max 2MB)
+								    </div>
+								    <!-- New Image Preview -->
+								    <div class="mt-2 d-none" id="newImagePreviewContainer">
+								        <img id="newImagePreview" class="img-fluid rounded border" alt="New product image preview" style="max-height:200px;">
+								    </div>
+								</div>
+								
+								<!-- Create Date (for edit mode) -->
+								<div class="col-md-6" th:if="${product.createDate != null}">
+									<label for="productCreateDate" class="form-label">Create Date</label>
+									<input type="date" class="form-control" id="productCreateDate" 
+									       th:field="*{createDate}" disabled>
+								</div>
+
+								<!-- Available Checkbox -->
+								<div class="col-12">
+									<div class="form-check">
+										<input class="form-check-input" type="checkbox" id="productAvailable"
+											th:field="*{available}">
+										<label class="form-check-label" for="productAvailable">
+											Available for sale
+										</label>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<a th:href="@{/dashboard/product/cancel}" class="btn btn-secondary">
+							<i class="bi bi-x-circle me-2"></i>Cancel
+						</a>
+						<button type="submit" form="productForm" class="btn btn-success">
+							<i class="bi bi-check-circle me-2"></i>Save Product
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+	<!-- Modal backdrop (shown when modal is active) -->
+	<div th:if="${showModal or showDeleteModal}" class="modal-backdrop fade show"></div>
+	
+	<script layout:fragment="scripts">
+		// Initialize modal functionality for closing when shown via Thymeleaf
+		document.addEventListener('DOMContentLoaded', function() {
+			const showModal = /*[[${showModal}]]*/ false;
+			if (showModal) {
+				// Initialize Bootstrap modal for proper closing functionality
+				const modal = new bootstrap.Modal(document.getElementById('productFormModal'));
+				// Modal is already shown via Thymeleaf, just enable Bootstrap functionality
+			}
+		});
+		
+		// Image preview function
+		function previewImage(input) {
+			const container = document.getElementById('newImagePreviewContainer');
+			const preview = document.getElementById('newImagePreview');
+			
+			if (input.files && input.files[0]) {
+				const reader = new FileReader();
+				
+				reader.onload = function (e) {
+					preview.src = e.target.result;
+					container.classList.remove('d-none');
+				};
+				
+				reader.readAsDataURL(input.files[0]);
+			}
+		}
+	</script>
+</body>
+</html>

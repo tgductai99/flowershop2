@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/admin}">
+<head>
+<title layout:fragment="title">Order Management</title>
+</head>
+<body>
+	<!-- Page Title -->
+	<span layout:fragment="pageTitle">Order Management</span>
+	
+	<div layout:fragment="content">
+		<div class="row">
+			<!-- Order List Table -->
+			<div class="col-12">
+				<div class="card admin-table-card">
+					<div class="card-header">
+						<h5 class="mb-0">
+							<i class="bi bi-cart-check me-2"></i>Orders
+						</h5>
+					</div>
+
+					<div class="card-body p-3">
+						<!-- Success/Error Messages -->
+						<div th:if="${message == 'updateSuccess'}"
+						     class="alert alert-success alert-dismissible fade show auto-hide" role="alert">
+						    <i class="bi bi-check-circle me-2"></i>Order status updated successfully!
+						    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+						</div>
+						
+						<div th:if="${message == 'updateFail'}"
+						     class="alert alert-danger alert-dismissible fade show auto-hide" role="alert">
+						    <i class="bi bi-exclamation-triangle me-2"></i>Failed to update order status!
+						    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+						</div>
+
+						<!-- Search & Filter -->
+						<form th:action="@{/dashboard/order}" method="get" class="row g-3 mb-4">
+							<div class="col-md-3">
+								<input type="text" class="form-control"
+									placeholder="Search by name or order ID..." name="keyword" th:value="${keyword}">
+							</div>
+
+							<div class="col-md-2">
+								<select class="form-select" name="status">
+									<option value="">All Status</option>
+									<option value="Pending" th:selected="${status == 'Pending'}">Pending</option>
+									<option value="Processing" th:selected="${status == 'Processing'}">Processing</option>
+									<option value="Shipped" th:selected="${status == 'Shipped'}">Shipped</option>
+									<option value="Delivered" th:selected="${status == 'Delivered'}">Delivered</option>
+									<option value="Cancelled" th:selected="${status == 'Cancelled'}">Cancelled</option>
+								</select>
+							</div>
+
+							<div class="col-md-2">
+								<input type="date" class="form-control" name="fromDate" 
+									th:value="${fromDate}" placeholder="From Date">
+							</div>
+							
+							<div class="col-md-2">
+								<input type="date" class="form-control" name="toDate" 
+									th:value="${toDate}" placeholder="To Date">
+							</div>
+
+							<div class="col-md-3">
+								<button type="submit" class="btn btn-primary">
+									<i class="bi bi-search me-2"></i>Search
+								</button>
+								<a th:href="@{/dashboard/order}" class="btn btn-secondary ms-2">
+									<i class="bi bi-arrow-clockwise me-2"></i>Reset
+								</a>
+							</div>
+						</form>
+
+						<!-- Order Table -->
+						<div class="table-responsive">
+							<table class="table table-hover align-middle admin-table">
+								<thead>
+									<tr>
+										<th>Date</th>
+										<th>Customer</th>
+										<th>Phone</th>
+										<th>Address</th>
+										<th>Status</th>
+										<th>Actions</th>
+									</tr>
+								</thead>
+
+								<tbody>
+									<tr th:each="o : ${orders}">
+										<td th:text="${#temporals.format(o.createDate, 'dd/MM/yyyy')}">Date</td>
+										<td th:text="${o.account.fullname}">Customer Name</td>
+										<td th:text="${o.account.phone}">Phone</td>
+										<td th:text="${o.address}">Address</td>
+										<td>
+											<span class="status-badge" 
+											      th:classappend="${o.status == 'Pending' ? 'pending' : 
+											                       o.status == 'Processing' ? 'processing' : 
+											                       o.status == 'Shipped' ? 'shipped' : 
+											                       o.status == 'Delivered' ? 'completed' : 
+											                       o.status == 'Cancelled' ? 'cancelled' : ''}"
+											      th:text="${o.status}">
+											</span>
+										</td>
+										<td>
+											<div class="table-actions">
+												<a th:href="@{/dashboard/order/view/{id}(id=${o.id})}"
+													class="btn btn-sm btn-info" title="View Details">
+													<i class="bi bi-eye"></i>
+												</a>
+												<a th:href="@{/dashboard/order/edit/{id}(id=${o.id})}"
+													class="btn btn-sm btn-warning" title="Edit Status">
+													<i class="bi bi-pencil"></i>
+												</a>
+											</div>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

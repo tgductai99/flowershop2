@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/admin}">
+<head>
+<title layout:fragment="title">Edit Order Status</title>
+</head>
+<body>
+	<!-- Page Title -->
+	<span layout:fragment="pageTitle">Edit Order Status</span>
+	
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-12">
+				<!-- Back Button -->
+				<div class="mb-3">
+					<a th:href="@{/dashboard/order}" class="btn btn-secondary">
+						<i class="bi bi-arrow-left me-2"></i>Back to Orders
+					</a>
+				</div>
+				
+				<!-- Edit Form -->
+				<div class="card">
+					<div class="card-header bg-warning">
+						<h5 class="mb-0">
+							<i class="bi bi-pencil me-2"></i>Update Order Status - #<span th:text="${order.id}"></span>
+						</h5>
+					</div>
+					<div class="card-body">
+						<!-- Order Summary -->
+						<div class="alert alert-info">
+							<div class="row">
+								<div class="col-md-6">
+									<p class="mb-1"><strong>Customer:</strong> <span th:text="${order.account.fullname}"></span></p>
+									<p class="mb-1"><strong>Email:</strong> <span th:text="${order.account.email}"></span></p>
+								</div>
+								<div class="col-md-6">
+									<p class="mb-1"><strong>Date:</strong> <span th:text="${#temporals.format(order.createDate, 'dd/MM/yyyy')}"></span></p>
+									<p class="mb-0"><strong>Current Status:</strong> 
+										<span class="status-badge" 
+											th:classappend="${order.status == 'Pending' ? 'pending' : 
+															 order.status == 'Processing' ? 'processing' : 
+															 order.status == 'Shipped' ? 'shipped' : 
+															 order.status == 'Delivered' ? 'completed' : 
+															 order.status == 'Cancelled' ? 'cancelled' : ''}"
+											th:text="${order.status}">
+										</span>
+									</p>
+								</div>
+							</div>
+						</div>
+						
+						<!-- Status Update Form -->
+						<form th:action="@{/dashboard/order/update/{id}(id=${order.id})}" method="post">
+							<div class="mb-3">
+								<label for="orderStatus" class="form-label required">New Status</label>
+								<select class="form-select" id="orderStatus" name="status" required>
+									<option value="Pending" th:selected="${order.status == 'Pending'}">Pending</option>
+									<option value="Processing" th:selected="${order.status == 'Processing'}">Processing</option>
+									<option value="Shipped" th:selected="${order.status == 'Shipped'}">Shipped</option>
+									<option value="Delivered" th:selected="${order.status == 'Delivered'}">Delivered</option>
+									<option value="Cancelled" th:selected="${order.status == 'Cancelled'}">Cancelled</option>
+								</select>
+								<div class="form-text">Select the new status for this order.</div>
+							</div>
+							
+							<div class="d-flex gap-2">
+								<button type="submit" class="btn btn-primary">
+									<i class="bi bi-check-circle me-2"></i>Update Status
+								</button>
+								<a th:href="@{/dashboard/order}" class="btn btn-secondary">
+									<i class="bi bi-x-circle me-2"></i>Cancel
+								</a>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

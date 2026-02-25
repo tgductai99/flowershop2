@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/client}">
+
+<head>
+<title layout:fragment="title">Về Chúng Tôi</title>
+</head>
+
+<body>
+	<div layout:fragment="content">
+		<!-- About Us Section -->
+		<section class="py-5">
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-8 mx-auto">
+
+						<div class="text-center mb-4">
+							<h1 class="mb-2">Về Sea FLora</h1>
+							<img src="/images/logos/logo.jpg" alt="logo"
+								class="d-block mx-auto mb-3"
+								style="width: 250px; height: 250px; object-fit: contain;">
+							<p class="text-muted mb-0">Hoa tươi mỗi ngày • Thiết kế theo
+								yêu cầu • Giao nhanh tận nơi</p>
+						</div>
+
+						<!-- Our Story -->
+						<div class="card mb-4 shadow-sm">
+							<div class="card-body">
+								<h3 class="card-title">Câu chuyện của chúng tôi</h3>
+								<p class="card-text">FlowerShop là cửa hàng hoa tươi với
+									mong muốn mang đến những bó hoa tinh tế, tươi mới và đầy cảm
+									xúc cho mọi khoảnh khắc trong cuộc sống. Từ lời chúc mừng, lời
+									cảm ơn, đến những dịp đặc biệt như sinh nhật, kỷ niệm hay ngày
+									cưới — chúng tôi luôn sẵn sàng giúp bạn “gửi gắm” thông điệp
+									bằng hoa.</p>
+								<p class="card-text">Chúng tôi chọn hoa kỹ lưỡng, phối màu
+									hài hoà và chăm chút từng chi tiết để mỗi sản phẩm không chỉ
+									đẹp mà còn bền, tươi lâu và đúng “gu” của bạn.</p>
+							</div>
+						</div>
+
+						<!-- What We Offer -->
+						<div class="card mb-4 shadow-sm">
+							<div class="card-body">
+								<h3 class="card-title">Chúng tôi mang đến</h3>
+
+								<div class="row g-3">
+									<div class="col-md-6">
+										<div class="d-flex align-items-start">
+											<i class="bi bi-flower1 text-primary me-3"
+												style="font-size: 2rem;"></i>
+											<div>
+												<h5 class="mb-1">Hoa tươi mỗi ngày</h5>
+												<p class="text-muted mb-0">Hoa được nhập mới thường
+													xuyên, đảm bảo độ tươi và chất lượng.</p>
+											</div>
+										</div>
+									</div>
+
+									<div class="col-md-6">
+										<div class="d-flex align-items-start">
+											<i class="bi bi-palette text-primary me-3"
+												style="font-size: 2rem;"></i>
+											<div>
+												<h5 class="mb-1">Thiết kế theo yêu cầu</h5>
+												<p class="text-muted mb-0">Bó hoa, giỏ hoa, lẵng hoa
+													theo tone màu, ngân sách và dịp tặng.</p>
+											</div>
+										</div>
+									</div>
+
+									<div class="col-md-6">
+										<div class="d-flex align-items-start">
+											<i class="bi bi-truck text-primary me-3"
+												style="font-size: 2rem;"></i>
+											<div>
+												<h5 class="mb-1">Giao nhanh – đúng hẹn</h5>
+												<p class="text-muted mb-0">Hỗ trợ giao trong ngày (tuỳ
+													khu vực & khung giờ đặt hàng).</p>
+											</div>
+										</div>
+									</div>
+
+									<div class="col-md-6">
+										<div class="d-flex align-items-start">
+											<i class="bi bi-chat-heart text-primary me-3"
+												style="font-size: 2rem;"></i>
+											<div>
+												<h5 class="mb-1">Tư vấn tận tâm</h5>
+												<p class="text-muted mb-0">Gợi ý mẫu phù hợp người nhận,
+													thông điệp, và cách chăm hoa.</p>
+											</div>
+										</div>
+									</div>
+								</div>
+
+							</div>
+						</div>
+
+						<!-- Our Commitment -->
+						<div class="card shadow-sm">
+							<div class="card-body">
+								<h3 class="card-title">Cam kết của Sea FLora</h3>
+								<ul class="mb-3">
+									<li>Hoa tươi, phối đúng mẫu/đúng tone (trong giới hạn mùa
+										vụ).</li>
+									<li>Đóng gói cẩn thận, kèm thiệp theo nội dung bạn muốn.</li>
+									<li>Hỗ trợ đổi/điều chỉnh nếu sản phẩm có lỗi do vận
+										chuyển.</li>
+								</ul>
+								<p class="card-text mb-0">Cảm ơn bạn đã tin chọn FlowerShop.
+									Chúng tôi rất vui khi được đồng hành cùng bạn trong những
+									khoảnh khắc đáng nhớ.</p>
+							</div>
+						</div>
+
+						<!-- CTA -->
+						<div class="text-center mt-5">
+							<a th:href="@{/products}" class="btn btn-primary btn-lg"> <i
+								class="bi bi-shop"></i> Xem sản phẩm
+							</a> <a th:href="@{/contact}"
+								class="btn btn-outline-primary btn-lg ms-2"> <i
+								class="bi bi-envelope"></i> Liên hệ tư vấn
+							</a>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</section>
+	</div>
+</body>
+</html>

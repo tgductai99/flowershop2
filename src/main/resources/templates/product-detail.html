@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/client}">
+
+<head>
+    <title layout:fragment="title" th:text="${product.name}">Product Detail</title>
+</head>
+
+<body>
+<div layout:fragment="content">
+    <!-- Product Detail Section -->
+    <section class="product-detail py-5">
+        <div class="container">
+            <div class="row">
+                <!-- Product Image -->
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <div class="position-relative">
+                        <img th:src="@{/images/{img}(img=${product.image})}" 
+                             class="img-fluid rounded shadow" 
+                             th:alt="${product.name}" onerror="this.style.display='none'"
+                             style="width: 100%; max-height: 600px; object-fit: cover;">
+                        <span class="badge bg-danger position-absolute top-0 end-0 m-3" 
+                              th:if="${product.amount == 0}">
+                            Out Of Stock
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Product Details -->
+                <div class="col-lg-6">
+                    <nav aria-label="breadcrumb" class="mb-3">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
+                            <li class="breadcrumb-item"><a th:href="@{/products}">Products</a></li>
+                            <li class="breadcrumb-item active" aria-current="page" th:text="${product.name}">Product</li>
+                        </ol>
+                    </nav>
+                    
+                    <h1 class="mb-3" th:text="${product.name}">Product Name</h1>
+                    
+                    <div class="mb-3">
+                        <span class="badge bg-light text-dark border">
+                            <i class="bi bi-tag"></i>
+                            <span th:text="${product.category != null ? product.category.name : 'Chưa phân loại'}">Category Tag</span>
+                        </span>
+                    </div>
+                    
+                    <h2 class="text-danger fw-bold mb-4" th:text="${T(poly.edu.utils.CurrencyUtil).formatVND(product.price)}">Price</h2>
+                    
+                    <div class="mb-4">
+                        <h5 class="fw-bold">Product Information</h5>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="bi bi-box-seam text-primary"></i>
+                                <strong>Quantity:</strong>
+                                <span class="badge bg-success ms-2" th:if="${product.amount > 0}">
+                                    In Stock (<span th:text="${product.amount}">0</span> products)
+                                </span>
+                                <span class="badge bg-danger ms-2" th:if="${product.amount == 0}">
+                                    Out Of Stock
+                                </span>
+                            </li>
+                            <li class="mb-2" th:if="${product.available}">
+                                <i class="bi bi-check-circle text-success"></i>
+                                <strong>Status:</strong> In Business
+                            </li>
+                            <li class="mb-2" th:unless="${product.available}">
+                                <i class="bi bi-x-circle text-danger"></i>
+                                <strong>Status:</strong> Out Of Business
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-calendar text-primary"></i>
+                                <strong>Create Date:</strong>
+                                <span th:text="${#temporals.format(product.createDate, 'dd/MM/yyyy')}">Date</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mb-4 p-3 bg-light rounded">
+                        <h5 class="fw-bold mb-3"><i class="bi bi-info-circle"></i> Description</h5>
+                        <p class="text-muted mb-0">
+                            Hoa tươi cao cấp, được chọn lọc kỹ càng và bó/cắm bởi đội ngũ florist chuyên nghiệp. 
+                            Thích hợp làm quà tặng cho các dịp đặc biệt như sinh nhật, kỷ niệm, chúc mừng, hoặc trang trí không gian.
+                        </p>
+                    </div>
+                    
+                    <!-- Add to Cart Form -->
+                    <form th:action="@{/cart/add}" method="post" class="mt-4" th:if="${product.available}">
+                        <input type="hidden" name="productId" th:value="${product.id}">
+                        
+                        <div class="mb-4">
+                            <label for="quantity" class="form-label fw-bold">Quantity:</label>
+                            <div class="input-group" style="max-width: 200px;">
+                                <button class="btn btn-outline-secondary" type="button" onclick="decrementQuantity()">
+                                    <i class="bi bi-dash"></i>
+                                </button>
+                                <input type="number" 
+                                       class="form-control text-center" 
+                                       id="quantity" 
+                                       name="quantity" 
+                                       value="1" 
+                                       min="1" 
+                                       th:max="${product.amount}"
+                                       th:disabled="${product.amount == 0}"
+                                       readonly>
+                                <button class="btn btn-outline-secondary" type="button" onclick="incrementQuantity()">
+                                    <i class="bi bi-plus"></i>
+                                </button>
+                            </div>
+                            <small class="text-muted" th:if="${product.amount > 0}">
+                                There're <span th:text="${product.amount}">0</span> product left
+                            </small>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" 
+                                    class="btn btn-primary btn-lg" 
+                                    th:disabled="${product.amount == 0}">
+                                <i class="bi bi-cart-plus"></i> Add To Cart
+                            </button>
+                            <button type="submit" 
+                                    th:formaction="@{/cart/buy}"
+                                    class="btn btn-success btn-lg"
+                                    th:disabled="${product.amount == 0}">
+                                <i class="bi bi-lightning-fill"></i> Buy Now
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div class="alert alert-warning mt-4" th:unless="${product.available}">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        This product is no longer available
+                    </div>
+                    
+                    <div class="mt-4">
+                        <a th:href="@{/products}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Continue Shopping
+                        </a>
+                    </div>
+                    
+                    <!-- Additional Info -->
+                    <div class="mt-5 pt-4 border-top">
+                        <h6 class="fw-bold mb-3">Shop Policies</h6>
+                        <ul class="list-unstyled small text-muted">
+                            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> Shipping within 2-4 hours</li>
+                            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> 100% Fresh, quality ensurance</li>
+                            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> Free greeting cards</li>
+                            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> Return and exchange within 24h if not satisfied</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <script th:inline="javascript">
+        const maxQuantity = /*[[${product.amount}]]*/ 1;
+        
+        function incrementQuantity() {
+            const input = document.getElementById('quantity');
+            const currentValue = parseInt(input.value);
+            if (currentValue < maxQuantity) {
+                input.value = currentValue + 1;
+            }
+        }
+        
+        function decrementQuantity() {
+            const input = document.getElementById('quantity');
+            const currentValue = parseInt(input.value);
+            if (currentValue > 1) {
+                input.value = currentValue - 1;
+            }
+        }
+    </script>
+</div>
+</body>
+</html>

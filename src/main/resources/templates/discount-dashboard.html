@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/admin}">
+<head>
+<title layout:fragment="title">Discount Management</title>
+</head>
+
+<body>
+	<!-- Page Title -->
+	<span layout:fragment="pageTitle">Discount Management</span>
+	
+	<div layout:fragment="content">
+		<div class="row">
+			<!-- Discount List Table -->
+			<div class="col-12 mb-4">
+				<div class="card admin-table-card">
+					<div class="card-header">
+						<h5 class="mb-0">
+							<i class="bi bi-percent me-2"></i>Discounts
+						</h5>
+						<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#discountFormModal">
+							<i class="bi bi-plus-circle me-2"></i>Add Discount
+						</button>
+					</div>
+
+					<div class="card-body p-3">
+						<!-- Success/Error Messages -->
+						<div th:if="${message == 'saveTrue'}"
+						     class="alert alert-success alert-dismissible fade show auto-hide" role="alert">
+						    <i class="bi bi-check-circle me-2"></i>Discount saved successfully!
+						    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+						</div>
+						
+						<div th:if="${message == 'deleteTrue'}"
+						     class="alert alert-success alert-dismissible fade show auto-hide" role="alert">
+						    <i class="bi bi-check-circle me-2"></i>Discount deleted successfully!
+						    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+						</div>
+						
+						<div th:if="${message == 'saveFail'}"
+						     class="alert alert-danger alert-dismissible fade show auto-hide" role="alert">
+						    <i class="bi bi-exclamation-triangle me-2"></i>Failed to save discount!
+						    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+						</div>
+						
+						<div th:if="${message == 'deleteFail'}"
+						     class="alert alert-danger alert-dismissible fade show auto-hide" role="alert">
+						    <i class="bi bi-exclamation-triangle me-2"></i>Failed to delete discount!
+						    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+						</div>
+
+						<!-- Search & Filter -->
+						<form th:action="@{/dashboard/discount}" method="get" class="row g-3 mb-4">
+							<div class="col-md-4">
+								<input type="text" class="form-control"
+									placeholder="Search by product name..." name="keyword"
+									th:value="${discountKeyword}">
+							</div>
+
+							<div class="col-md-3">
+								<select class="form-select" name="discountType">
+									<option value="" th:selected="${discountType == ''}">All Discount Type</option>
+									<option value="PERCENT" th:selected="${discountType == 'PERCENT'}">Percent</option>
+									<option value="AMOUNT" th:selected="${discountType == 'AMOUNT'}">Amount</option>
+								</select>
+							</div>
+
+							<div class="col-md-3">
+								<select class="form-select" name="active">
+									<option value="" th:selected="${active == ''}">All Status</option>
+									<option value=true th:selected="${active == true}">Active</option>
+									<option value=false th:selected="${active == false}">Inactive</option>
+								</select>
+							</div>
+
+							<div class="col-md-2">
+								<button type="submit" class="btn btn-primary w-100">
+									<i class="bi bi-search me-2"></i>Filter
+								</button>
+							</div>
+						</form>
+
+						<!-- Discount Table -->
+						<div class="table-responsive">
+							<table class="table table-hover align-middle admin-table">
+								<thead>
+									<tr>
+										<th>ID</th>
+										<th>Product</th>
+										<th>Type</th>
+										<th>Value</th>
+										<th>Start Date</th>
+										<th>End Date</th>
+										<th>Status</th>
+										<th>Actions</th>
+									</tr>
+								</thead>
+
+								<tbody>
+									<tr th:each="d : ${discounts}">
+										<td th:text="${d.id}">1</td>
+										<td th:text="${d.product.name}">Product Name</td>
+										<td>
+											<span class="badge bg-info" th:text="${d.discountType}">Type</span>
+										</td>
+										<td th:text="${d.discountValue}">Value</td>
+										<td th:text="${d.startDate}">Start</td>
+										<td th:text="${d.endDate}">End</td>
+										<td>
+											<span class="status-badge" 
+											      th:classappend="${d.active ? 'active' : 'inactive'}"
+											      th:text="${d.active ? 'Active' : 'Inactive'}">
+											</span>
+										</td>
+										<td>
+											<div class="table-actions">
+												<a th:href="@{/dashboard/discount/edit/{id}(id=${d.id})}"
+													class="btn btn-sm btn-warning" title="Edit">
+													<i class="bi bi-pencil"></i>
+												</a>
+												<button type="button" class="btn btn-sm btn-danger"
+													data-bs-toggle="modal" 
+													th:data-bs-target="'#deleteModal' + ${d.id}"
+													title="Delete">
+													<i class="bi bi-trash"></i>
+												</button>
+											</div>
+											
+											<!-- Delete Confirmation Modal -->
+											<div class="modal fade" th:id="'deleteModal' + ${d.id}" tabindex="-1">
+												<div class="modal-dialog modal-dialog-centered">
+													<div class="modal-content">
+														<div class="modal-header bg-danger text-white">
+															<h5 class="modal-title">
+																<i class="bi bi-exclamation-triangle me-2"></i>Confirm Delete
+															</h5>
+															<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+														</div>
+														<div class="modal-body text-center py-4">
+															<i class="bi bi-trash text-danger" style="font-size: 3rem;"></i>
+															<h5 class="mt-3">Are you sure?</h5>
+															<p class="text-muted">
+																Do you want to delete this discount?<br>
+																This action cannot be undone.
+															</p>
+														</div>
+														<div class="modal-footer">
+															<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+															<a th:href="@{/dashboard/discount/delete/{id}(id=${d.id})}"
+																class="btn btn-danger">
+																<i class="bi bi-trash me-2"></i>Delete
+															</a>
+														</div>
+													</div>
+												</div>
+											</div>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					
+					<!-- DISCOUNT PAGINATION -->
+					<nav class="admin-pagination" th:if="${discountPage != null}">
+						<ul class="pagination mb-0">
+
+							<!-- First -->
+							<li class="page-item"
+								th:classappend="${discountPage == 0} ? 'disabled'"><a
+								class="page-link"
+								th:href="@{/dashboard/discount(
+			                    discountPage=0,
+			                    discountKeyword=${discountKeyword},
+			                    discountType=${discountType},
+			                    active=${active}
+			               )}">
+									First </a></li>
+
+							<!-- Previous -->
+							<li class="page-item"
+								th:classappend="${discountPage == 0} ? 'disabled'"><a
+								class="page-link"
+								th:href="@{/dashboard/discount(
+			                    discountPage=${discountPage > 0 ? discountPage - 1 : 0},
+			                    discountKeyword=${discountKeyword},
+			                    discountType=${discountType},
+			                    active=${active}
+			               )}">
+									&laquo; </a></li>
+
+							<!-- Page Numbers (5) -->
+							<li class="page-item"
+								th:each="i : ${#numbers.sequence(
+			                discountPage > 1 ? discountPage - 2 : 0,
+			                discountPage < discountPages - 2 ? discountPage + 2 : discountPages - 1
+			            )}"
+								th:classappend="${i == discountPage} ? 'active'"><a
+								class="page-link" th:text="${i + 1}"
+								th:href="@{/dashboard/discount(
+			                    discountPage=${i},
+			                    discountKeyword=${discountKeyword},
+			                    discountType=${discountType},
+			                    active=${active}
+			               )}">
+							</a></li>
+
+							<!-- Next -->
+							<li class="page-item"
+								th:classappend="${discountPage == discountPages - 1} ? 'disabled'">
+								<a class="page-link"
+								th:href="@{/dashboard/discount(
+			                    discountPage=${discountPage < discountPages - 1 ? discountPage + 1 : discountPages - 1},
+			                    discountKeyword=${discountKeyword},
+			                    discountType=${discountType},
+			                    active=${active}
+			               )}">
+									&raquo; </a>
+							</li>
+
+							<!-- Last -->
+							<li class="page-item"
+								th:classappend="${discountPage == discountPages - 1} ? 'disabled'">
+								<a class="page-link"
+								th:href="@{/dashboard/discount(
+			                    discountPage=${discountPages - 1},
+			                    discountKeyword=${discountKeyword},
+			                    discountType=${discountType},
+			                    active=${active}
+			               )}">
+									Last </a>
+							</li>
+
+						</ul>
+					</nav>
+				</div>
+			</div>
+			
+			<!-- Product Selection Table -->
+			<div class="col-12">
+				<div class="card admin-table-card">
+					<div class="card-header">
+						<h5 class="mb-0">
+							<i class="bi bi-box-seam me-2"></i>Select Product for Discount
+						</h5>
+					</div>
+
+					<div class="card-body p-3">
+						<!-- Search & Filter -->
+						<form th:action="@{/dashboard/discount}" method="get" class="row g-3 mb-4">
+							<div class="col-md-6">
+								<input type="text" class="form-control"
+									placeholder="Search by product name..." name="productKeyword"
+									th:value="${productKeyword}">
+							</div>
+
+							<div class="col-md-4">
+								<select class="form-select" name="categoryId">
+									<option value="">All Categories</option>
+									<option th:each="c : ${categories}" th:value="${c.id}"
+										th:text="${c.name}" th:selected="${c.id == categoryId}"></option>
+								</select>
+							</div>
+
+							<div class="col-md-2">
+								<button type="submit" class="btn btn-primary w-100">
+									<i class="bi bi-search me-2"></i>Filter
+								</button>
+							</div>
+						</form>
+
+						<!-- Product Table -->
+						<div class="table-responsive">
+							<table class="table table-hover align-middle admin-table">
+								<thead>
+									<tr>
+										<th>ID</th>
+										<th>Image</th>
+										<th>Name</th>
+										<th>Price</th>
+										<th>Available</th>
+										<th>Actions</th>
+									</tr>
+								</thead>
+
+								<tbody>
+									<tr th:each="p : ${products}">
+										<td th:text="${p.id}">1</td>
+										<td>
+											<img th:src="@{/images/{img}(img=${p.image})}"
+												class="table-image" th:alt="${p.name}" onerror="this.style.display='none'">
+										</td>
+										<td th:text="${p.name}">Product Name</td>
+										<td th:text="${T(poly.edu.utils.CurrencyUtil).formatVND(p.price)}">Price</td>
+										<td>
+											<span class="status-badge" 
+											      th:classappend="${p.available ? 'active' : 'inactive'}"
+											      th:text="${p.available ? 'Yes' : 'No'}">
+											</span>
+										</td>
+										<td>
+											<a th:href="@{/dashboard/discount/choose/{id}(id=${p.id})}"
+												class="btn btn-sm btn-primary">
+												<i class="bi bi-check-circle me-1"></i>Choose
+											</a>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					
+					<!-- PRODUCT PAGINATION -->
+					<nav class="admin-pagination" th:if="${productPage != null}">
+						<ul class="pagination mb-0">
+
+							<!-- First -->
+							<li class="page-item"
+								th:classappend="${productPage == 0} ? 'disabled'"><a
+								class="page-link"
+								th:href="@{/dashboard/discount(
+                productPage=0,
+                productKeyword=${productKeyword},
+                categoryId=${categoryId}
+           )}">
+									First </a></li>
+
+							<!-- Previous -->
+							<li class="page-item"
+								th:classappend="${productPage == 0} ? 'disabled'"><a
+								class="page-link"
+								th:href="@{/dashboard/discount(
+                productPage=${productPage > 0 ? productPage - 1 : 0},
+                productKeyword=${productKeyword},
+                categoryId=${categoryId}
+           )}">
+									&laquo; </a></li>
+
+							<!-- Page Numbers (5) -->
+							<li class="page-item"
+								th:each="i : ${#numbers.sequence(
+                productPage > 1 ? productPage - 2 : 0,
+                productPage < productPages - 2 ? productPage + 2 : productPages - 1
+            )}"
+								th:classappend="${i == productPage} ? 'active'"><a
+								class="page-link" th:text="${i + 1}"
+								th:href="@{/dashboard/discount(
+                productPage=${i},
+                productKeyword=${productKeyword},
+                categoryId=${categoryId}
+           )}">
+							</a></li>
+
+							<!-- Next -->
+							<li class="page-item"
+								th:classappend="${productPage == productPages - 1} ? 'disabled'">
+								<a class="page-link"
+								th:href="@{/dashboard/discount(
+                productPage=${productPage < productPages - 1 ? productPage + 1 : productPages - 1},
+                productKeyword=${productKeyword},
+                categoryId=${categoryId}
+           )}">
+									&raquo; </a>
+							</li>
+
+							<!-- Last -->
+							<li class="page-item"
+								th:classappend="${productPage == productPages - 1} ? 'disabled'">
+								<a class="page-link"
+								th:href="@{/dashboard/discount(
+                productPage=${productPages - 1},
+                productKeyword=${productKeyword},
+                categoryId=${categoryId}
+           )}">
+									Last </a>
+							</li>
+
+						</ul>
+					</nav>
+				</div>
+			</div>
+		</div>
+		
+		<!-- Discount Form Modal -->
+		<div class="modal fade" id="discountFormModal" tabindex="-1" aria-labelledby="discountFormModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header bg-primary text-white">
+						<h5 class="modal-title" id="discountFormModalLabel">
+							<i class="bi bi-percent me-2"></i>
+							<span th:text="${discount.id != null ? 'Edit Discount' : 'Add New Discount'}">Add New Discount</span>
+						</h5>
+						<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<form th:action="@{/dashboard/discount/save}" th:object="${discount}" method="post" id="discountForm">
+
+							<input type="hidden" th:field="*{id}" />
+							<input type="hidden" name="productId" th:value="${product.id}">
+
+							<!-- Product (Read-only) -->
+							<div class="mb-3">
+								<label class="form-label">Product</label>
+								<input type="text" class="form-control" th:value="${product.name}" readonly>
+								<div class="form-text">Select a product from the table below to create a discount</div>
+							</div>
+
+							<!-- Discount Type -->
+							<div class="mb-3">
+								<label for="discountType" class="form-label required">Discount Type</label>
+								<select class="form-select" th:field="*{discountType}" id="discountType">
+									<option value="PERCENT">Percent (%)</option>
+									<option value="AMOUNT">Amount (VND)</option>
+								</select>
+							</div>
+
+							<!-- Discount Value -->
+							<div class="mb-3">
+								<label for="discountValue" class="form-label required">Discount Value</label>
+								<input type="number" id="discountValue" class="form-control"
+									th:field="*{discountValue}" required min="0">
+								<div class="invalid-feedback">Please provide a discount value.</div>
+							</div>
+
+							<!-- Start Date -->
+							<div class="mb-3">
+								<label for="discountStartDate" class="form-label required">Start Date</label>
+								<input type="date" class="form-control" id="discountStartDate" 
+								       th:field="*{startDate}" required>
+								<div class="invalid-feedback">Please provide a start date.</div>
+							</div>
+
+							<!-- End Date -->
+							<div class="mb-3">
+								<label for="discountEndDate" class="form-label required">End Date</label>
+								<input type="date" class="form-control" id="discountEndDate" 
+								       th:field="*{endDate}" required>
+								<div class="invalid-feedback">Please provide an end date.</div>
+							</div>
+
+							<!-- Active -->
+							<div class="mb-3">
+								<div class="form-check">
+									<input class="form-check-input" type="checkbox" id="discountActive"
+										th:field="*{active}">
+									<label class="form-check-label" for="discountActive">
+										Active
+									</label>
+								</div>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+							<i class="bi bi-x-circle me-2"></i>Cancel
+						</button>
+						<button type="submit" form="discountForm" class="btn btn-success">
+							<i class="bi bi-check-circle me-2"></i>Save Discount
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<script layout:fragment="scripts">
+		// Show modal if discount is set (for edit mode)
+		document.addEventListener('DOMContentLoaded', function() {
+			const discountId = /*[[${discount.id}]]*/ null;
+			if (discountId) {
+				const modal = new bootstrap.Modal(document.getElementById('discountFormModal'));
+				modal.show();
+			}
+		});
+		
+		// Update discount value input based on type
+		const discountTypeSelect = document.getElementById("discountType");
+		const discountValueInput = document.getElementById("discountValue");
+
+		function updateStep() {
+			if (discountTypeSelect.value === "PERCENT") {
+				discountValueInput.step = "1";
+				discountValueInput.max = "100";
+			} else {
+				discountValueInput.step = "1000";
+				discountValueInput.removeAttribute("max");
+			}
+		}
+
+		// On page load
+		updateStep();
+
+		// On change
+		discountTypeSelect.addEventListener("change", updateStep);
+		
+		// Enforce max value for percent
+		discountValueInput.addEventListener("input", function () {
+			const max = parseFloat(this.max);
+			const value = parseFloat(this.value);
+
+			if (!isNaN(value) && !isNaN(max) && value > max) {
+				this.value = max;
+			}
+		});
+	</script>
+</body>
+</html>

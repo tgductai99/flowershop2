@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/admin}">
+<head>
+    <title layout:fragment="title">Category Management</title>
+</head>
+
+<body>
+	<!-- Page Title -->
+	<span layout:fragment="pageTitle">Category Management</span>
+	
+	<div layout:fragment="content">
+		<div class="row">
+			<!-- Category List Table -->
+			<div class="col-12">
+				<div class="card admin-table-card">
+					<div class="card-header">
+						<h5 class="mb-0">
+							<i class="bi bi-tags me-2"></i>Categories
+						</h5>
+						<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#categoryFormModal">
+							<i class="bi bi-plus-circle me-2"></i>Add Category
+						</button>
+					</div>
+
+					<div class="card-body p-3">
+						<!-- Success/Error Messages -->
+						<div th:if="${message == 'saveTrue'}"
+						     class="alert alert-success alert-dismissible fade show auto-hide" role="alert">
+						    <i class="bi bi-check-circle me-2"></i>Category saved successfully!
+						    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+						</div>
+						
+						<div th:if="${message == 'deleteTrue'}"
+						     class="alert alert-success alert-dismissible fade show auto-hide" role="alert">
+						    <i class="bi bi-check-circle me-2"></i>Category deleted successfully!
+						    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+						</div>
+						
+						<div th:if="${message == 'saveFail'}"
+						     class="alert alert-danger alert-dismissible fade show auto-hide" role="alert">
+						    <i class="bi bi-exclamation-triangle me-2"></i>Failed to save category!
+						    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+						</div>
+						
+						<div th:if="${message == 'deleteFail'}"
+						     class="alert alert-danger alert-dismissible fade show auto-hide" role="alert">
+						    <i class="bi bi-exclamation-triangle me-2"></i>Failed to delete category!
+						    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+						</div>
+
+						<!-- Search Bar -->
+						<form class="row g-3 mb-4" th:action="@{/dashboard/category}" method="get">
+							<div class="col-md-9">
+								<input type="text" name="keyword" th:value="${keyword}"
+								       class="form-control" placeholder="Search by category name...">
+							</div>
+
+							<div class="col-md-3">
+								<button type="submit" class="btn btn-primary">
+									<i class="bi bi-search me-2"></i>Search
+								</button>
+								<a th:href="@{/dashboard/category}" class="btn btn-secondary ms-2">
+									<i class="bi bi-arrow-clockwise me-2"></i>Reset
+								</a>
+							</div>
+						</form>
+
+						<!-- Category Table -->
+						<div class="table-responsive">
+							<table class="table table-hover align-middle admin-table">
+								<thead>
+									<tr>
+										<th>ID</th>
+										<th>Name</th>
+										<th>Actions</th>
+									</tr>
+								</thead>
+
+								<tbody>
+									<tr th:each="c : ${categories}">
+										<td th:text="${c.id}">1</td>
+										<td th:text="${c.name}">Category Name</td>
+										<td>
+											<div class="table-actions">
+												<a th:href="@{/dashboard/category/edit/{id}(id=${c.id})}"
+												   class="btn btn-sm btn-warning" title="Edit">
+													<i class="bi bi-pencil"></i>
+												</a>
+
+												<a th:href="@{/dashboard/category/confirm-delete/{id}(id=${c.id})}"
+													class="btn btn-sm btn-danger" title="Delete">
+													<i class="bi bi-trash"></i>
+												</a>
+											</div>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					
+					<!-- Pagination -->
+					<nav class="admin-pagination" th:if="${page != null}">
+					    <ul class="pagination mb-0">
+					
+							<!-- First -->
+					        <li class="page-item" th:classappend="${page == 0} ? 'disabled'">
+					            <a class="page-link"
+					               th:href="@{/dashboard/category(page=0, keyword=${keyword})}">
+					                First
+					            </a>
+					        </li>
+					
+					        <!-- Previous -->
+					        <li class="page-item" th:classappend="${page == 0} ? 'disabled'">
+					            <a class="page-link"
+					               th:href="@{/dashboard/category(page=${page > 0 ? page - 1 : 0}, keyword=${keyword})}">
+					                &laquo;
+					            </a>
+					        </li>
+					
+					        <!-- Page Numbers (ONLY 5) -->
+							<li class="page-item"
+							    th:each="i : ${#numbers.sequence(
+							        page > 1 ? page - 2 : 0,
+							        page < pages - 2 ? page + 2 : pages - 1
+							    )}"
+							    th:classappend="${i == page} ? 'active'">
+							    <a class="page-link"
+							       th:text="${i + 1}"
+							       th:href="@{/dashboard/category(page=${i}, keyword=${keyword})}">
+							    </a>
+							</li>
+					
+					        <!-- Next -->
+					        <li class="page-item" th:classappend="${page == pages - 1} ? 'disabled'">
+					            <a class="page-link"
+					               th:href="@{/dashboard/category(page=${page < pages - 1 ? page + 1 : pages - 1}, keyword=${keyword})}">
+					                 &raquo;
+					            </a>
+					        </li>
+							
+							<!-- Last -->
+					        <li class="page-item" th:classappend="${page == pages - 1} ? 'disabled'">
+					            <a class="page-link"
+					               th:href="@{/dashboard/category(page=${pages - 1}, keyword=${keyword})}">
+					                Last
+					            </a>
+					        </li>
+					    </ul>
+					</nav>
+				</div>
+			</div>
+		</div>
+		
+		<!-- Delete Confirmation Modal (Server-side controlled) -->
+		<div class="modal fade" id="deleteModal" tabindex="-1"
+		     th:classappend="${showDeleteModal} ? 'show' : ''" 
+		     th:style="${showDeleteModal} ? 'display: block;' : ''"
+		     th:if="${deleteCategory != null}">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header bg-danger text-white">
+						<h5 class="modal-title">
+							<i class="bi bi-exclamation-triangle me-2"></i>Confirm Delete
+						</h5>
+						<a th:href="@{/dashboard/category}" class="btn-close btn-close-white" aria-label="Close"></a>
+					</div>
+					<div class="modal-body text-center py-4">
+						<i class="bi bi-trash text-danger" style="font-size: 3rem;"></i>
+						<h5 class="mt-3">Are you sure?</h5>
+						<p class="text-muted">
+							Do you want to delete "<span th:text="${deleteCategory.name}"></span>"?<br>
+							This action cannot be undone.
+						</p>
+					</div>
+					<div class="modal-footer">
+						<a th:href="@{/dashboard/category}" class="btn btn-secondary">Cancel</a>
+						<a th:href="@{/dashboard/category/delete/{id}(id=${deleteCategory.id})}"
+							class="btn btn-danger">
+							<i class="bi bi-trash me-2"></i>Delete
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!-- Category Form Modal -->
+		<div class="modal fade" id="categoryFormModal" tabindex="-1" aria-labelledby="categoryFormModalLabel" aria-hidden="true"
+		     th:classappend="${showModal} ? 'show' : ''" th:style="${showModal} ? 'display: block;' : ''">
+			<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header bg-primary text-white">
+						<h5 class="modal-title" id="categoryFormModalLabel">
+							<i class="bi bi-tags me-2"></i>
+							<span th:text="${category.id != null ? 'Edit Category' : 'Add New Category'}">Add New Category</span>
+						</h5>
+						<a th:href="@{/dashboard/category/cancel}" class="btn-close btn-close-white" aria-label="Close"></a>
+					</div>
+					<div class="modal-body">
+						<form th:action="@{/dashboard/category/save}" th:object="${category}" method="post" id="categoryForm">
+							
+							<div class="mb-3">
+								<label for="categoryId" class="form-label required">Category ID</label>
+								<input type="text" class="form-control" id="categoryId" 
+								       th:field="*{id}" required
+								       th:readonly="${category.id != null}">
+								<div class="invalid-feedback">Please provide a category ID.</div>
+							</div>
+
+							<div class="mb-3">
+								<label for="categoryName" class="form-label required">Category Name</label>
+								<input type="text" class="form-control" id="categoryName" 
+								       th:field="*{name}" required>
+								<div class="invalid-feedback">Please provide a category name.</div>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<a th:href="@{/dashboard/category/cancel}" class="btn btn-secondary">
+							<i class="bi bi-x-circle me-2"></i>Cancel
+						</a>
+						<button type="submit" form="categoryForm" class="btn btn-success">
+							<i class="bi bi-check-circle me-2"></i>Save Category
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+	<!-- Modal backdrop (shown when modal is active) -->
+	<div th:if="${showModal or showDeleteModal}" class="modal-backdrop fade show"></div>
+	
+	<script layout:fragment="scripts">
+		<!-- Pure Thymeleaf modal control - no JavaScript needed -->
+	</script>
+</body>
+</html>

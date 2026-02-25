@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/client}">
+
+<head>
+  <title layout:fragment="title">Home - FlowerShop</title>
+</head>
+
+<body>
+<div layout:fragment="content">
+
+  <!-- HERO -->
+  <section class="py-5 mb-5">
+    <div class="container">
+      <div class="row align-items-center g-4">
+        <div class="col-lg-6">
+          <!-- <span class="badge rounded-pill text-bg-primary-subtle text-primary mb-3">
+            <i class="bi bi-flower1 me-1"></i> Hoa tươi mỗi ngày
+          </span> -->
+
+          <h1 class="display-5 fw-bold lh-sm mb-3">
+            Beautiful Flowers<br class="d-none d-lg-block"> for Every Occasion
+          </h1>
+
+          <p class="lead text-muted mb-4">
+            Fresh, handcrafted arrangements delivered to your door. Celebrate life's special moments with stunning floral designs.
+          </p>
+
+          <div class="d-flex flex-wrap gap-2">
+            <a th:href="@{/products}" class="btn btn-primary btn-lg">
+              <i class="bi bi-shop me-1"></i> Shop Now
+            </a>
+            <a th:href="@{/contact}" class="btn btn-outline-primary btn-lg">
+              <i class="bi bi-chat-dots me-1"></i> Tư vấn nhanh
+            </a>
+          </div>
+
+          <div class="d-flex flex-wrap gap-3 mt-4 small text-muted">
+            <div class="d-flex align-items-center">
+              <i class="bi bi-truck me-2 text-primary"></i> Giao nhanh trong ngày*
+            </div>
+            <div class="d-flex align-items-center">
+              <i class="bi bi-shield-check me-2 text-primary"></i> Đảm bảo chất lượng
+            </div>
+            <div class="d-flex align-items-center">
+              <i class="bi bi-card-checklist me-2 text-primary"></i> Thiệp miễn phí
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-6">
+          <div class="position-relative rounded-4 overflow-hidden shadow">
+            <img th:src="@{/images/products/hoacuoi/hoacuoi_01.jpg}"
+                 alt="Beautiful flower arrangement"
+                 class="img-fluid"
+                 style="height: 420px; width: 100%; object-fit: cover;">
+            <div class="position-absolute top-0 start-0 w-100 h-100"
+                 style="background: linear-gradient(120deg, rgba(13,110,253,.20), rgba(0,0,0,.10));">
+            </div>
+
+            <div class="position-absolute bottom-0 start-0 p-3 p-md-4 text-white">
+              <div class="fw-semibold">Bộ sưu tập nổi bật</div>
+              <div class="small opacity-75">Hoa cưới • Hoa sinh nhật • Hoa chúc mừng</div>
+            </div>
+
+            <div class="position-absolute top-0 end-0 p-3">
+              <!-- <span class="badge text-bg-light shadow-sm">
+                <i class="bi bi-star-fill text-warning me-1"></i> 4.9
+              </span> -->
+            </div>
+          </div>
+          <div class="text-muted small mt-2">
+            *Tuỳ khu vực & thời gian đặt hàng.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- USP / FEATURES -->
+  <section class="pb-5">
+    <div class="container">
+      <div class="row g-3 g-md-4">
+        <div class="col-12 col-md-6 col-lg-3">
+          <div class="card border-0 shadow-sm h-100 rounded-4">
+            <div class="card-body p-4">
+              <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary-subtle text-primary mb-3"
+                   style="width:46px;height:46px;">
+                <i class="bi bi-flower1 fs-4"></i>
+              </div>
+              <h6 class="fw-bold mb-1">Hoa tươi chọn lọc</h6>
+              <p class="text-muted small mb-0">Nhập mới thường xuyên, giữ form đẹp và tươi lâu.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-3">
+          <div class="card border-0 shadow-sm h-100 rounded-4">
+            <div class="card-body p-4">
+              <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary-subtle text-primary mb-3"
+                   style="width:46px;height:46px;">
+                <i class="bi bi-palette fs-4"></i>
+              </div>
+              <h6 class="fw-bold mb-1">Thiết kế theo yêu cầu</h6>
+              <p class="text-muted small mb-0">Chọn tone, kiểu dáng, ngân sách theo dịp tặng.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-3">
+          <div class="card border-0 shadow-sm h-100 rounded-4">
+            <div class="card-body p-4">
+              <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary-subtle text-primary mb-3"
+                   style="width:46px;height:46px;">
+                <i class="bi bi-truck fs-4"></i>
+              </div>
+              <h6 class="fw-bold mb-1">Giao nhanh đúng hẹn</h6>
+              <p class="text-muted small mb-0">Theo dõi đơn dễ dàng, hỗ trợ giao trong ngày.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-3">
+          <div class="card border-0 shadow-sm h-100 rounded-4">
+            <div class="card-body p-4">
+              <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary-subtle text-primary mb-3"
+                   style="width:46px;height:46px;">
+                <i class="bi bi-heart fs-4"></i>
+              </div>
+              <h6 class="fw-bold mb-1">Tận tâm & tinh tế</h6>
+              <p class="text-muted small mb-0">Gói quà, thiệp lời chúc, tư vấn nhanh.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURED PRODUCTS -->
+  <section class="py-5 bg-light">
+    <div class="container">
+      <div class="d-flex align-items-end justify-content-between mb-4">
+        <div>
+          <h2 class="mb-1">Featured Products</h2>
+          <div class="text-muted">Những mẫu hoa được yêu thích</div>
+        </div>
+        <a th:href="@{/products}" class="btn btn-outline-primary d-none d-md-inline-flex">
+          Xem tất cả <i class="bi bi-arrow-right ms-1"></i>
+        </a>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-12 col-md-6 col-lg-3" th:each="p : ${products}">
+          <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
+            <a th:href="@{/products/{id}(id=${p.id})}" class="text-decoration-none">
+              <div class="position-relative">
+                <img th:src="@{/images/{img}(img=${p.image})}"
+                     class="w-100"
+                     th:alt="${p.name}" onerror="this.style.display='none'"
+                     style="height: 240px; object-fit: cover;">
+
+                <span class="badge text-bg-primary position-absolute top-0 start-0 m-3">
+                  <i class="bi bi-stars me-1"></i> Hot
+                </span>
+
+                <!-- <div class="position-absolute bottom-0 start-0 w-100 px-3 pb-3"
+                     style="background: linear-gradient(180deg, transparent, rgba(0,0,0,.45));">
+                  <div class="text-white small">
+                    <i class="bi bi-star-fill text-warning"></i>
+                    <i class="bi bi-star-fill text-warning"></i>
+                    <i class="bi bi-star-fill text-warning"></i>
+                    <i class="bi bi-star-fill text-warning"></i>
+                    <i class="bi bi-star-half text-warning"></i>
+                    <span class="ms-1 opacity-75">(4.5)</span>
+                  </div>
+                </div> -->
+              </div>
+            </a>
+
+            <div class="card-body d-flex flex-column p-3 p-md-4">
+              <h6 class="fw-bold mb-1 text-truncate" th:text="${p.name}">Product Name</h6>
+              <div class="text-muted small mb-3" th:text="${p.category?.name}">Category</div>
+
+              <div class="mt-auto">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                  <div class="h5 text-primary mb-0"
+                       th:text="${T(poly.edu.utils.CurrencyUtil).formatVND(p.price)}">Price</div>
+                  <a th:href="@{/products/{id}(id=${p.id})}" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-eye"></i>
+                  </a>
+                </div>
+
+                <form th:action="@{/cart/add}" method="post" class="d-grid gap-2">
+                  <input type="hidden" name="productId" th:value="${p.id}">
+                  <input type="hidden" name="quantity" value="1">
+                  <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-cart-plus me-1"></i> Add to Cart
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <nav class="mt-5" th:if="${pages > 1}">
+        <ul class="pagination justify-content-center">
+          <li class="page-item" th:classappend="${page == 0} ? 'disabled'">
+            <a class="page-link" th:href="@{/home(page=0, keyword=${keyword}, categoryId=${categoryId})}">First</a>
+          </li>
+
+          <li class="page-item" th:classappend="${page == 0} ? 'disabled'">
+            <a class="page-link"
+               th:href="@{/home(page=${page > 0 ? page - 1 : 0}, keyword=${keyword}, categoryId=${categoryId})}">
+              &laquo;
+            </a>
+          </li>
+
+          <li class="page-item"
+              th:each="i : ${#numbers.sequence(page > 1 ? page - 2 : 0, page < pages - 2 ? page + 2 : pages - 1)}"
+              th:classappend="${i == page} ? 'active'">
+            <a class="page-link"
+               th:text="${i + 1}"
+               th:href="@{/home(page=${i}, keyword=${keyword}, categoryId=${categoryId})}">1</a>
+          </li>
+
+          <li class="page-item" th:classappend="${page == pages - 1} ? 'disabled'">
+            <a class="page-link"
+               th:href="@{/home(page=${page < pages - 1 ? page + 1 : pages - 1}, keyword=${keyword}, categoryId=${categoryId})}">
+              &raquo;
+            </a>
+          </li>
+
+          <li class="page-item" th:classappend="${page == pages - 1} ? 'disabled'">
+            <a class="page-link" th:href="@{/home(page=${pages - 1}, keyword=${keyword}, categoryId=${categoryId})}">Last</a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="text-center mt-4 d-md-none">
+        <a th:href="@{/products}" class="btn btn-outline-primary">
+          Xem tất cả <i class="bi bi-arrow-right ms-1"></i>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CATEGORIES -->
+  <section class="py-5">
+    <div class="container">
+      <div class="text-center mb-4">
+        <h2 class="mb-1">Shop by Category</h2>
+        <div class="text-muted">Chọn nhanh theo danh mục</div>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-12 col-md-6 col-lg-3" th:each="category : ${categories}">
+          <a th:href="@{/products(categoryId=${category.id})}" class="text-decoration-none">
+            <div class="card border-0 shadow-sm h-100 rounded-4">
+              <div class="card-body p-4 text-center">
+                <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary-subtle text-primary mb-3"
+                     style="width:64px;height:64px;">
+                  <i class="bi bi-flower1" style="font-size: 2rem;"></i>
+                </div>
+
+                <h6 class="fw-bold mb-1" th:text="${category.name}">Category Name</h6>
+                <div class="text-muted small">Explore our collection</div>
+
+                <div class="mt-3">
+                  <span class="btn btn-sm btn-outline-primary">
+                    Xem ngay <i class="bi bi-arrow-right ms-1"></i>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>

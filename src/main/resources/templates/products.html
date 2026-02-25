@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/client}">
+
+<head>
+    <title layout:fragment="title">Products</title>
+</head>
+
+<body>
+<div layout:fragment="content">
+
+    <!-- ================= FILTER FORM ================= -->
+    <section class=" py-4">
+        <div class="container">
+            <form th:action="@{/products}" method="get" class="row g-2 align-items-end">
+
+                <!-- Search by name -->
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Search product</label>
+                    <input type="text"
+                           name="keyword"
+                           th:value="${keyword}"
+                           class="form-control"
+                           placeholder="Enter product name">
+                </div>
+
+                <!-- Category filter -->
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Category</label>
+                    <select name="categoryId" class="form-select">
+                        <option value="">-- All categories --</option>
+                        <option th:each="c : ${categories}"
+                                th:value="${c.id}"
+                                th:text="${c.name}"
+                                th:selected="${categoryId == c.id}">
+                        </option>
+                    </select>
+                </div>
+
+                <!-- Sort by price -->
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Sort by price</label>
+                    <select name="sortBy" class="form-select">
+                        <option value="">-- Default --</option>
+                        <option value="price-asc" th:selected="${sortBy == 'price-asc'}">Price: Low to High</option>
+                        <option value="price-desc" th:selected="${sortBy == 'price-desc'}">Price: High to Low</option>
+                    </select>
+                </div>
+
+                <!-- Filter button -->
+                <div class="col-md-2 d-grid">
+                    <button class="btn btn-primary">
+                        Filter
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </section>
+
+
+
+    <!-- ================= PRODUCT LIST ================= -->
+    <section class="py-5">
+        <div class="container">
+            <h2 class="mb-4">Products</h2>
+            <div class="row g-4">
+                <!-- Product Cards with responsive grid: 1 col mobile, 2 col tablet, 3 col desktop -->
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3" th:each="p : ${products}">
+                    <div class="card product-card h-100 shadow-sm">
+                        <!-- Product Image -->
+                        <a th:href="@{/products/{id}(id=${p.id})}" class="text-decoration-none">
+                            <div class="product-image-container">
+                                <img th:src="@{/images/{img}(img=${p.image})}" 
+                                     class="card-img-top" 
+                                     th:alt="${p.name}"
+                                     onerror="this.style.display='none'"
+                                     style="height: 250px; object-fit: cover;">
+                            </div>
+                        </a>
+                        
+                        <!-- Product Details -->
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title" th:text="${p.name}">Product Name</h5>
+                            <p class="card-text text-muted small" th:text="${p.category != null ? p.category.name : 'Uncategorized'}">Category</p>
+                            <div class="mt-auto">
+                                <p class="h5 text-primary mb-3" th:text="${T(poly.edu.utils.CurrencyUtil).formatVND(p.price)}">Price</p>
+                                <a th:href="@{/products/{id}(id=${p.id})}" class="btn btn-outline-primary w-100 mb-2">
+                                    <i class="bi bi-eye"></i> View Details
+                                </a>
+                                <form th:action="@{/cart/add}" method="post" class="d-inline w-100">
+                                    <input type="hidden" name="productId" th:value="${p.id}">
+                                    <input type="hidden" name="quantity" value="1">
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="bi bi-cart-plus"></i> Add to Cart
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Empty State -->
+                <div class="col-12" th:if="${#lists.isEmpty(products)}">
+                    <div class="alert alert-info text-center">
+                        <i class="bi bi-info-circle"></i> No products found. Try adjusting your filters.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+	
+	<!-- Pagination -->
+	<nav class="mt-5" th:if="${pages > 1}">
+		<ul class="pagination justify-content-center">
+			<!-- First -->
+			<li class="page-item" th:classappend="${page == 0} ? 'disabled'">
+				<a class="page-link" th:href="@{/products(page=0, keyword=${keyword}, categoryId=${categoryId}, sortBy=${sortBy})}">
+					First
+				</a>
+			</li>
+
+			<!-- Previous -->
+			<li class="page-item" th:classappend="${page == 0} ? 'disabled'">
+				<a class="page-link" th:href="@{/products(page=${page > 0 ? page - 1 : 0}, keyword=${keyword}, categoryId=${categoryId}, sortBy=${sortBy})}">
+					&laquo;
+				</a>
+			</li>
+
+			<!-- Page Numbers -->
+			<li class="page-item"
+			    th:each="i : ${#numbers.sequence(page > 1 ? page - 2 : 0, page < pages - 2 ? page + 2 : pages - 1)}"
+			    th:classappend="${i == page} ? 'active'">
+				<a class="page-link" th:text="${i + 1}" th:href="@{/products(page=${i}, keyword=${keyword}, categoryId=${categoryId}, sortBy=${sortBy})}">1</a>
+			</li>
+
+			<!-- Next -->
+			<li class="page-item" th:classappend="${page == pages - 1} ? 'disabled'">
+				<a class="page-link" th:href="@{/products(page=${page < pages - 1 ? page + 1 : pages - 1}, keyword=${keyword}, categoryId=${categoryId}, sortBy=${sortBy})}">
+					&raquo;
+				</a>
+			</li>
+
+			<!-- Last -->
+			<li class="page-item" th:classappend="${page == pages - 1} ? 'disabled'">
+				<a class="page-link" th:href="@{/products(page=${pages - 1}, keyword=${keyword}, categoryId=${categoryId}, sortBy=${sortBy})}">
+					Last
+				</a>
+			</li>
+		</ul>
+	</nav>
+</div>
+</body>
+</html>

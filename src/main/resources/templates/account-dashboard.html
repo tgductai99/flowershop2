@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/admin}">
+
+<head>
+<title layout:fragment="title">Account Management</title>
+</head>
+
+<body>
+	<!-- Page Title -->
+	<span layout:fragment="pageTitle">Account Management</span>
+	
+	<div layout:fragment="content">
+		<div class="row">
+			<!-- Account List Table -->
+			<div class="col-12">
+				<div class="card admin-table-card">
+					<div class="card-header">
+						<h5 class="mb-0">
+							<i class="bi bi-people me-2"></i>User Accounts
+						</h5>
+						<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#accountFormModal">
+							<i class="bi bi-plus-circle me-2"></i>Add Account
+						</button>
+					</div>
+
+					<div class="card-body p-3">
+						<!-- Success/Error Messages -->
+						<div th:if="${message == 'saveTrue'}"
+						     class="alert alert-success alert-dismissible fade show auto-hide" role="alert">
+						    <i class="bi bi-check-circle me-2"></i>Account saved successfully!
+						    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+						</div>
+						
+						<div th:if="${message == 'deleteTrue'}"
+						     class="alert alert-success alert-dismissible fade show auto-hide" role="alert">
+						    <i class="bi bi-check-circle me-2"></i>Account deleted successfully!
+						    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+						</div>
+						
+						<div th:if="${message == 'saveFail'}"
+						     class="alert alert-danger alert-dismissible fade show auto-hide" role="alert">
+						    <i class="bi bi-exclamation-triangle me-2"></i>Failed to save account!
+						    <span th:if="${errorDetail}" th:text="' ' + ${errorDetail}"></span>
+						    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+						</div>
+						
+						<div th:if="${message == 'deleteFail'}"
+						     class="alert alert-danger alert-dismissible fade show auto-hide" role="alert">
+						    <i class="bi bi-exclamation-triangle me-2"></i>Failed to delete account!
+						    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+						</div>
+
+						<!-- Filter bar -->
+						<form th:action="@{/dashboard/account}" method="get" class="row g-3 mb-4">
+
+							<div class="col-md-3">
+								<input type="text" name="keyword" class="form-control"
+									placeholder="Search by username..." th:value="${keyword}">
+							</div>
+
+							<!-- Role -->
+							<div class="col-md-3">
+								<select name="admin" class="form-select">
+									<option value="">All Roles</option>
+									<option value="true" th:selected="${admin == true}">Admin</option>
+									<option value="false" th:selected="${admin == false}">User</option>
+								</select>
+							</div>
+
+							<!-- Activated -->
+							<div class="col-md-3">
+								<select name="activated" class="form-select">
+									<option value="">All Status</option>
+									<option value="true" th:selected="${activated == true}">Activated</option>
+									<option value="false" th:selected="${activated == false}">Deactivated</option>
+								</select>
+							</div>
+
+							<div class="col-md-3">
+								<button class="btn btn-primary">
+									<i class="bi bi-search me-2"></i>Filter
+								</button>
+								<a th:href="@{/dashboard/account}" class="btn btn-secondary ms-2">
+									<i class="bi bi-arrow-clockwise me-2"></i>Reset
+								</a>
+							</div>
+
+						</form>
+
+						<!-- Account Table -->
+						<div class="table-responsive">
+							<table class="table table-hover align-middle admin-table">
+								<thead>
+									<tr>
+										<th>Photo</th>
+										<th>Username</th>
+										<th>Full Name</th>
+										<th>Email</th>
+										<th>Phone</th>
+										<th>Role</th>
+										<th>Status</th>
+										<th>Actions</th>
+									</tr>
+								</thead>
+
+								<tbody>
+									<tr th:each="a : ${accounts}">
+										<td>
+											<img th:src="@{/images/{img}(img=${a.photo})}"
+												class="table-image" th:alt="${a.fullname}">
+										</td>
+										<td th:text="${a.username}">username</td>
+										<td th:text="${a.fullname}">Full Name</td>
+										<td th:text="${a.email}">email@example.com</td>
+										<td th:text="${a.phone}">Phone</td>
+										<td>
+											<span th:if="${a.admin}" class="badge bg-primary">Admin</span>
+											<span th:if="${!a.admin}" class="badge bg-secondary">User</span>
+										</td>
+										<td>
+											<span class="status-badge" 
+											      th:classappend="${a.activated ? 'active' : 'inactive'}"
+											      th:text="${a.activated ? 'Active' : 'Inactive'}">
+											</span>
+										</td>
+										<td>
+											<div class="table-actions">
+												<a th:href="@{/dashboard/account/edit/{u}(u=${a.username})}"
+													class="btn btn-sm btn-warning" title="Edit">
+													<i class="bi bi-pencil"></i>
+												</a>
+												<a th:href="@{/dashboard/account/confirm-delete/{u}(u=${a.username})}"
+													class="btn btn-sm btn-danger" title="Delete">
+													<i class="bi bi-trash"></i>
+												</a>
+											</div>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					
+					<!-- Pagination -->
+					<nav class="admin-pagination" th:if="${page != null}">
+						<ul class="pagination mb-0">
+
+							<!-- First -->
+							<li class="page-item" th:classappend="${page == 0} ? 'disabled'">
+								<a class="page-link"
+								th:href="@{/dashboard/account(
+					                    page=0,
+					                    keyword=${keyword},
+					                    activated=${activated},
+					                    admin=${admin}
+					               )}">
+									First </a>
+							</li>
+
+							<!-- Previous -->
+							<li class="page-item" th:classappend="${page == 0} ? 'disabled'">
+								<a class="page-link"
+								th:href="@{/dashboard/account(
+					                    page=${page > 0 ? page - 1 : 0},
+					                    keyword=${keyword},
+					                    activated=${activated},
+					                    admin=${admin}
+					               )}">
+									&laquo; </a>
+							</li>
+
+							<!-- Page Numbers (ONLY 5) -->
+							<li class="page-item"
+								th:each="i : ${#numbers.sequence(
+							        page > 1 ? page - 2 : 0,
+							        page < pages - 2 ? page + 2 : pages - 1
+							    )}"
+								th:classappend="${i == page} ? 'active'"><a
+								class="page-link" th:text="${i + 1}"
+								th:href="@{/dashboard/account(
+							            page=${i},
+							            keyword=${keyword},
+							            activated=${activated},
+					                    admin=${admin}
+							       )}">
+							</a></li>
+
+							<!-- Next -->
+							<li class="page-item"
+								th:classappend="${page == pages - 1} ? 'disabled'"><a
+								class="page-link"
+								th:href="@{/dashboard/account(
+					                    page=${page < pages - 1 ? page + 1 : pages - 1},
+					                    keyword=${keyword},
+					                    activated=${activated},
+					                    admin=${admin}
+					               )}">
+									&raquo; </a></li>
+
+							<!-- Last -->
+							<li class="page-item"
+								th:classappend="${page == pages - 1} ? 'disabled'"><a
+								class="page-link"
+								th:href="@{/dashboard/account(
+					                    page=${pages - 1},
+					                    keyword=${keyword},
+					                    activated=${activated},
+					                    admin=${admin}
+					               )}">
+									Last </a></li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+		</div>
+		
+		<!-- Delete Confirmation Modal (Server-side controlled) -->
+		<div class="modal fade" id="deleteModal" tabindex="-1"
+		     th:classappend="${showDeleteModal} ? 'show' : ''" 
+		     th:style="${showDeleteModal} ? 'display: block;' : ''"
+		     th:if="${deleteAccount != null}">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header bg-danger text-white">
+						<h5 class="modal-title">
+							<i class="bi bi-exclamation-triangle me-2"></i>Confirm Delete
+						</h5>
+						<a th:href="@{/dashboard/account}" class="btn-close btn-close-white" aria-label="Close"></a>
+					</div>
+					<div class="modal-body text-center py-4">
+						<i class="bi bi-trash text-danger" style="font-size: 3rem;"></i>
+						<h5 class="mt-3">Are you sure?</h5>
+						<p class="text-muted">
+							Do you want to delete account "<span th:text="${deleteAccount.username}"></span>"?<br>
+							This action cannot be undone.
+						</p>
+					</div>
+					<div class="modal-footer">
+						<a th:href="@{/dashboard/account}" class="btn btn-secondary">Cancel</a>
+						<a th:href="@{/dashboard/account/delete/{u}(u=${deleteAccount.username})}"
+							class="btn btn-danger">
+							<i class="bi bi-trash me-2"></i>Delete
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!-- Account Form Modal -->
+		<div class="modal fade" id="accountFormModal" tabindex="-1" aria-labelledby="accountFormModalLabel" aria-hidden="true"
+		     th:classappend="${showModal} ? 'show' : ''" th:style="${showModal} ? 'display: block;' : ''">
+			<div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="modal-header bg-primary text-white">
+						<h5 class="modal-title" id="accountFormModalLabel">
+							<i class="bi bi-person me-2"></i>
+							<span th:text="${account.username != null ? 'Edit Account' : 'Add New Account'}">Add New Account</span>
+						</h5>
+						<a th:href="@{/dashboard/account/cancel}" class="btn-close btn-close-white" aria-label="Close"></a>
+					</div>
+					<div class="modal-body">
+						<form th:action="@{/dashboard/account/save}" th:object="${account}" method="post"
+							enctype="multipart/form-data" id="accountForm">
+
+							<div class="row g-3">
+								<!-- Current Photo Preview -->
+								<div class="col-12" th:if="${account.photo != null}">
+									<label class="form-label fw-semibold">Current Photo</label>
+									<div class="border rounded p-2 text-center bg-light">
+										<img th:src="@{/images/{img}(img=*{photo})}"
+											class="img-thumbnail" id="currentPhotoPreview"
+											alt="Current account photo"
+											style="max-height:200px;">
+									</div>
+								</div>
+
+								<!-- Username -->
+								<div class="col-md-6">
+									<label for="accountUsername" class="form-label required">Username</label>
+									<input type="text" class="form-control" id="accountUsername" 
+									       th:field="*{username}" required
+									       th:readonly="${account.username != null}">
+									<div class="invalid-feedback">Please provide a username.</div>
+								</div>
+
+								<!-- Full Name -->
+								<div class="col-md-6">
+									<label for="accountFullname" class="form-label required">Full Name</label>
+									<input type="text" class="form-control" id="accountFullname" 
+									       th:field="*{fullname}" required>	
+									<div class="invalid-feedback">Please provide full name.</div>
+								</div>
+
+								<!-- Email -->
+								<div class="col-md-6">
+									<label for="accountEmail" class="form-label required">Email</label>
+									<input type="email" class="form-control" id="accountEmail" 
+									       th:field="*{email}" required>
+									<div class="invalid-feedback">Please provide a valid email.</div>
+								</div>
+
+								<!-- Phone -->
+								<div class="col-md-6">
+									<label for="accountPhone" class="form-label">Phone</label>
+									<input type="text" class="form-control" id="accountPhone" 
+									       th:field="*{phone}">
+								</div>
+
+								<!-- Address -->
+								<div class="col-md-6">
+									<label for="accountAddress" class="form-label">Address</label>
+									<input type="text" class="form-control" id="accountAddress" 
+									       th:field="*{address}">
+								</div>
+
+								<!-- Upload Photo -->
+								<div class="col-12">
+									<label for="accountPhoto" class="form-label">Upload Photo</label>
+									<input type="file" class="form-control" id="accountPhoto"
+										name="photoFile" accept="image/*" onchange="previewAccountImage(this)">
+									<div class="form-text">Allowed: JPG, PNG, GIF (Max 2MB)</div>
+									<!-- New Photo Preview -->
+									<div class="mt-2 d-none" id="newPhotoPreviewContainer">
+										<img id="newPhotoPreview" class="img-fluid rounded border" alt="New photo preview" style="max-height:200px;">
+									</div>
+								</div>
+
+								<input type="hidden" th:field="*{photo}">
+
+								<!-- Activated Checkbox -->
+								<div class="col-md-6">
+									<div class="form-check">
+										<input class="form-check-input" type="checkbox" id="accountActivated"
+											th:field="*{activated}">
+										<label class="form-check-label" for="accountActivated">
+											Activated
+										</label>
+									</div>
+								</div>
+
+								<!-- Admin Checkbox -->
+								<div class="col-md-6">
+									<div class="form-check">
+										<input class="form-check-input" type="checkbox" id="accountAdmin"
+											th:field="*{admin}">
+										<label class="form-check-label" for="accountAdmin">
+											Admin Role
+										</label>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<a th:href="@{/dashboard/account/cancel}" class="btn btn-secondary">
+							<i class="bi bi-x-circle me-2"></i>Cancel
+						</a>
+						<button type="submit" form="accountForm" class="btn btn-success">
+							<i class="bi bi-check-circle me-2"></i>Save Account
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+	<!-- Modal backdrop (shown when modal is active) -->
+	<div th:if="${showModal or showDeleteModal}" class="modal-backdrop fade show"></div>
+	
+	<script layout:fragment="scripts">
+		// Image preview function for account photo
+		function previewAccountImage(input) {
+			const container = document.getElementById('newPhotoPreviewContainer');
+			const preview = document.getElementById('newPhotoPreview');
+			
+			if (input.files && input.files[0]) {
+				const reader = new FileReader();
+				
+				reader.onload = function (e) {
+					preview.src = e.target.result;
+					container.classList.remove('d-none');
+				};
+				
+				reader.readAsDataURL(input.files[0]);
+			}
+		}
+	</script>
+</body>
+</html>

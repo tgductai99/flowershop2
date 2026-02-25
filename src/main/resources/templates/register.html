@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/client}">
+
+<head>
+    <title layout:fragment="title">Register</title>
+</head>
+
+<body>
+
+<div layout:fragment="content">
+
+    <div class="container mt-5" style="max-width: 520px;">
+        <div class="card shadow-sm">
+            <div class="card-body">
+
+                <h4 class="text-center mb-4">Create Account</h4>
+
+                
+
+                <form th:action="@{/register}"
+                      th:object="${account}"
+                      method="post"
+                      enctype="multipart/form-data">
+                      
+					<!-- Validation errors -->
+				    <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
+				        <ul>
+						    <li th:each="err : ${#fields.errors('*')}"
+						        th:text="${err}">
+						    </li>
+						</ul>
+				    </div>
+				    
+				    <div class="mb-3">
+					    <label class="form-label fw-semibold">Current Photo</label>
+					    <div class="border rounded p-2 text-center">
+					        <img th:src="@{/images/{img}(img=*{photo})}"
+					             class="img-thumbnail"
+					             alt="Profile photo preview"
+					             th:style="${account.photo != null} ? 'max-height:200px;' : 'max-height:200px; display:none;'"
+					             id="imagePreview">
+					    </div>
+					</div>
+				    
+                    <!-- Username -->
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+                        <input type="text"
+                               th:field="*{username}"
+                               class="form-control">
+                        <small class="text-danger"
+                               th:errors="*{username}"></small>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password"
+                               th:field="*{password}"
+                               class="form-control">
+                        <small class="text-danger"
+                               th:errors="*{password}"></small>
+                    </div>
+
+                    <!-- Fullname -->
+                    <div class="mb-3">
+                        <label class="form-label">Full name</label>
+                        <input type="text"
+                               th:field="*{fullname}"
+                               class="form-control">
+                        <small class="text-danger"
+                               th:errors="*{fullname}"></small>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email"
+                               th:field="*{email}"
+                               class="form-control">
+                        <small class="text-danger"
+                               th:errors="*{email}"></small>
+                    </div>
+
+					<!-- Photo -->
+                    <div class="mb-3">
+					    <label class="form-label fw-semibold">Upload Photo</label>
+					
+					    <input type="file"
+					           class="form-control"
+					           name="photoFile"
+					           accept="image/*"
+					           onchange="previewImage(this)">
+					
+					    <div class="form-text">
+					        Allowed: JPG, PNG, GIF (Max 2MB)
+					    </div>
+					</div>
+
+                    <!-- Defaults -->
+                    <input type="hidden" th:field="*{activated}" value="true">
+                    <input type="hidden" th:field="*{admin}" value="false">
+
+                    <button class="btn btn-primary w-100">
+                        Register
+                    </button>
+                </form>
+
+                <div class="text-center mt-3">
+                    <small>
+                        Already have an account?
+                        <a th:href="@{/login}">Login</a>
+                    </small>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

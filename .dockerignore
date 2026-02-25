@@ -1,0 +1,44 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# IDE
+.vscode
+.idea
+.settings
+.classpath
+.project
+.factorypath
+*.iml
+
+# Build artifacts
+target/
+*.war
+*.jar
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# Documentation
+*.md
+!README.md
+
+# Environment
+.env
+.env.*
+
+# Maven wrapper (optional, uncomment if you want to exclude)
+# .mvn/
+# mvnw
+# mvnw.cmd

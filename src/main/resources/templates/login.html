@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/client}">
+
+<head>
+    <title layout:fragment="title">Login</title>
+</head>
+
+<body>
+
+<div layout:fragment="content">
+
+    <div class="container mt-5" style="max-width: 420px;">
+        <div class="card shadow-sm">
+            <div class="card-body">
+
+                <h4 class="text-center mb-4">Login</h4>
+
+                <!-- Error -->
+                <div th:if="${param.error}" class="alert alert-danger">
+                    Invalid username or password
+                </div>
+
+                <!-- Logout -->
+                <div th:if="${param.logout}" class="alert alert-success">
+                    Logged out successfully
+                </div>
+                <!-- Register -->
+                <div th:if="${param.registerSuccess}" class="alert alert-success">
+                    Register successfully
+                </div>
+
+                <form th:action="@{/login}" method="post">
+
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+                        <input type="text"
+                               name="username"
+                               class="form-control"
+                               required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password"
+                               name="password"
+                               class="form-control"
+                               required>
+                    </div>
+
+                    <button class="btn btn-primary w-100">
+                        Login
+                    </button>
+                </form>
+
+                <div class="text-center mt-3">
+                    <small>
+                        Don’t have an account?
+                        <a th:href="@{/register}">Register</a>
+                    </small>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

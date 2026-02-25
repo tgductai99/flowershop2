@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+
+	<header th:fragment="header" class="header">
+		<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+			<div class="container">
+				<!-- Logo/Brand -->
+				<a class="navbar-brand d-flex align-items-center" th:href="@{/}">
+					<img src="/images/logos/logo.jpg" alt="logo" class="me-2"
+					style="width: 32px; height: 32px; object-fit: contain;"> <span
+					class="fw-bold">Sea FLORA</span>
+				</a>
+
+				<!-- Mobile Toggle Button -->
+				<button class="navbar-toggler" type="button"
+					data-bs-toggle="collapse" data-bs-target="#navbarNav"
+					aria-controls="navbarNav" aria-expanded="false"
+					aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+
+				<!-- Collapsible Navigation -->
+				<div class="collapse navbar-collapse" id="navbarNav">
+					<ul class="navbar-nav ms-auto align-items-lg-center">
+						<!-- Main Navigation Links -->
+						<li class="nav-item"><a class="nav-link" th:href="@{/}">
+								Home </a></li>
+						<li class="nav-item"><a class="nav-link"
+							th:href="@{/products}"> Products </a></li>
+						<li class="nav-item"><a class="nav-link" th:href="@{/about}">
+								About </a></li>
+						<li class="nav-item"><a class="nav-link"
+							th:href="@{/contact}"> Contact </a></li>
+
+						<!-- Admin Dashboard Link (only for admins) -->
+						<li class="nav-item" sec:authorize="hasRole('ADMIN')"><a
+							class="nav-link" th:href="@{/dashboard/product}"> <i
+								class="bi bi-speedometer2"></i> Dashboard
+						</a></li>
+
+						<!-- Cart Icon with Badge -->
+						<li class="nav-item"><a class="nav-link position-relative"
+							th:href="@{/cart/checkout}"> <i class="bi bi-cart fs-5"></i>
+								<span
+								class="badge bg-primary position-absolute top-0 start-100 translate-middle rounded-pill"
+								th:if="${session.cartItemCount != null && session.cartItemCount > 0}"
+								th:text="${session.cartItemCount}">0</span>
+						</a></li>
+
+						<!-- User Menu (Authenticated) -->
+						<li class="nav-item dropdown" sec:authorize="isAuthenticated()">
+							<a class="nav-link dropdown-toggle d-flex align-items-center"
+							href="#" id="userDropdown" role="button"
+							data-bs-toggle="dropdown" aria-expanded="false"> <i
+								class="bi bi-person-circle me-1"></i> <span
+								sec:authentication="name">User</span>
+						</a>
+							<ul class="dropdown-menu dropdown-menu-end"
+								aria-labelledby="userDropdown">
+								<li><a class="dropdown-item" th:href="@{/profile}"> <i
+										class="bi bi-person"></i> Profile
+								</a></li>
+								<li><a class="dropdown-item" th:href="@{/change-password}">
+										<i class="bi bi-key"></i> Change Password
+								</a></li>
+								<li><hr class="dropdown-divider"></li>
+								<li>
+									<form th:action="@{/logout}" method="post" class="d-inline">
+										<button type="submit" class="dropdown-item text-danger">
+											<i class="bi bi-box-arrow-right"></i> Logout
+										</button>
+									</form>
+								</li>
+							</ul>
+						</li>
+
+						<!-- Login/Register Links (Anonymous) -->
+						<li class="nav-item" sec:authorize="isAnonymous()"><a
+							class="nav-link" th:href="@{/login}"> <i
+								class="bi bi-box-arrow-in-right"></i> Login
+						</a></li>
+						<li class="nav-item" sec:authorize="isAnonymous()"><a
+							class="btn btn-primary btn-sm ms-lg-2" th:href="@{/register}">
+								Register </a></li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+	</header>
+
+</body>
+</html>
